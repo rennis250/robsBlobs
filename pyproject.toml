@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "robsblobs"
+version = "0.1.0"
+description = ""
+authors = ["Robert Ennis <Robert.Ennis@psychol.uni-giessen.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+numpy = "^1.25.1"
+scipy = "^1.11.1"
+colour-science = "^0.4.2"
+pycircstat = "^0.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

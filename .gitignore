@@ -1,0 +1,11 @@
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Poetry
+__pypackages__/
+.poetry/
+poetry.lock
+
+# Virtual environment
+venv/
