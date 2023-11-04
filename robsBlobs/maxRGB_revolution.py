@@ -6,6 +6,15 @@ bright_JND = bright_JND/100 # since it was in units of 100% and we are typically
 bright_JND
 
 def maxRGB(rgb):
+    """
+    Returns the maximum value of the input RGB array.
+
+    Parameters:
+    rgb (numpy.ndarray): An array of RGB values.
+
+    Returns:
+    float: The maximum value of the input RGB array.
+    """
     return np.max(rgb)
 
 

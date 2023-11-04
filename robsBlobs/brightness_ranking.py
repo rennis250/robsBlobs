@@ -3,6 +3,16 @@ import numpy as np
 from .monitor import Monitor
 
 def rank_lum(mon: Monitor, rgbs):
+    """
+    Ranks the brightness of RGB colors based on the luminance values of the monitor.
+
+    Args:
+        mon (Monitor): The monitor object containing the luminance values.
+        rgbs (numpy.ndarray): An array of RGB colors to be ranked.
+
+    Returns:
+        numpy.ndarray: An array of indices that sorts the RGB colors from highest to lowest brightness.
+    """
     rs = rgbs[:, 0].squeeze()
     gs = rgbs[:, 1].squeeze()
     bs = rgbs[:, 2].squeeze()
@@ -17,6 +27,16 @@ def rank_lum(mon: Monitor, rgbs):
 
 
 def rank_rad(mon: Monitor, rgbs):
+    """
+    Ranks the brightness of RGB values based on the maximum spectrum of the given monitor.
+
+    Args:
+        mon (Monitor): The monitor object containing the maximum spectrum values.
+        rgbs (numpy.ndarray): An array of RGB values.
+
+    Returns:
+        numpy.ndarray: An array of indices that correspond to the brightness ranking of the RGB values.
+    """
     rs = rgbs[:, 0].squeeze()
     gs = rgbs[:, 1].squeeze()
     bs = rgbs[:, 2].squeeze()
@@ -38,6 +58,15 @@ def rank_rad(mon: Monitor, rgbs):
 
 
 def rank_sumrgb(rgbs):
+    """
+    Ranks the brightness of RGB values based on the sum of their components.
+
+    Args:
+        rgbs (numpy.ndarray): An array of RGB values, where each row represents a single RGB value.
+
+    Returns:
+        numpy.ndarray: An array of indices that represent the ranking of the RGB values based on their brightness.
+    """
     rs = rgbs[:, 0].squeeze()
     gs = rgbs[:, 1].squeeze()
     bs = rgbs[:, 2].squeeze()
@@ -51,6 +80,15 @@ def rank_sumrgb(rgbs):
 
 
 def rank_maxrgb(rgbs):
+    """
+    Ranks the RGB values based on their maximum value.
+
+    Args:
+        rgbs (numpy.ndarray): An array of RGB values.
+
+    Returns:
+        numpy.ndarray: An array of indices that correspond to the sorted RGB values in descending order.
+    """
     rs = rgbs[:, 0].squeeze()
     gs = rgbs[:, 1].squeeze()
     bs = rgbs[:, 2].squeeze()
@@ -64,7 +102,16 @@ def rank_maxrgb(rgbs):
 
 
 def normalised_kendall_tau_distance(values1, values2):
-    """Compute the Kendall tau distance."""
+    """
+    Compute the normalised Kendall tau distance between two lists of values.
+
+    Args:
+        values1 (list): First list of values.
+        values2 (list): Second list of values.
+
+    Returns:
+        float: Normalised Kendall tau distance between the two lists of values.
+    """
     n = len(values1)
     assert len(values2) == n, "Both lists have to be of equal length"
     i, j = np.meshgrid(np.arange(n), np.arange(n))
@@ -75,6 +122,16 @@ def normalised_kendall_tau_distance(values1, values2):
 
 
 def accuracyShuchen(ranks1, ranks2):
+    """
+    Computes the accuracy of the ranking given two sets of ranks.
+
+    Parameters:
+    ranks1 (list): A list of ranks.
+    ranks2 (list): A list of ranks.
+
+    Returns:
+    float: The accuracy of the ranking.
+    """
     nr1 = len(ranks1)
     pairRanks1 = np.zeros((nr1, nr1))
     for c1 in range(nr1):
@@ -122,6 +179,16 @@ from .jingHSP import jingHSP
 import colour
 
 def computeAllBrightnessModels(mon: Monitor, rgbs):
+    """
+    Computes various brightness models for a given set of RGB values.
+
+    Args:
+    - mon: Monitor object containing information about the monitor used to display the RGB values.
+    - rgbs: numpy array of shape (n, 3) containing n RGB values.
+
+    Returns:
+    - Dictionary containing the computed brightness values for each model.
+    """
     d65_xy = XYZ2xy(mon.monWP)
 
     ncs = len(rgbs)

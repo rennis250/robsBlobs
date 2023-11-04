@@ -4,6 +4,15 @@ from .cie_standard import plank_lasso, XYZ2xyY
 from .monitor import Monitor
 
 def to_u(XYZ):
+    """
+    Converts a 3D point in XYZ space to its corresponding U coordinate in UV space.
+
+    Args:
+        XYZ (tuple): A tuple containing the X, Y, and Z coordinates of the point in XYZ space.
+
+    Returns:
+        float: The U coordinate of the point in UV space.
+    """
     X = XYZ[0]
     Y = XYZ[1]
     Z = XYZ[2]
@@ -12,6 +21,15 @@ def to_u(XYZ):
 
 
 def to_v(XYZ):
+    """
+    Converts a 3D point in XYZ space to its corresponding V coordinate in UV space.
+
+    Args:
+        XYZ (tuple): A tuple containing the X, Y, and Z coordinates of the point in XYZ space.
+
+    Returns:
+        float: The V coordinate of the point in UV space.
+    """
     X = XYZ[0]
     Y = XYZ[1]
     Z = XYZ[2]
@@ -20,6 +38,15 @@ def to_v(XYZ):
 
 
 def xyY2uvY(xyY):
+    """
+    Convert xyY color space to uvY color space.
+
+    Parameters:
+    xyY (numpy.ndarray): Array of xyY values.
+
+    Returns:
+    numpy.ndarray: Array of uvY values.
+    """
     x = xyY[0]
     y = xyY[1]
     Y = xyY[2]
@@ -31,6 +58,15 @@ def xyY2uvY(xyY):
 
 
 def uvY2xyY(uvY):
+    """
+    Convert uvY color space to xyY color space.
+
+    Args:
+        uvY (np.array): Array of length 3 containing u, v, and Y values.
+
+    Returns:
+        np.array: Array of length 3 containing x, y, and Y values.
+    """
     u = uvY[0]
     v = uvY[1]
     Y = uvY[2]
@@ -42,6 +78,16 @@ def uvY2xyY(uvY):
 
 
 def XYZ2LUV(mon: Monitor, XYZ):
+    """
+    Convert XYZ color space to LUV color space.
+
+    Args:
+        mon (Monitor): The monitor object.
+        XYZ (numpy.ndarray): The input color in XYZ color space.
+
+    Returns:
+        numpy.ndarray: The color in LUV color space.
+    """
     Y = XYZ[1]
     Yn = mon.monWP[1]
 

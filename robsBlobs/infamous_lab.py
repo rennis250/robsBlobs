@@ -46,6 +46,16 @@ def lab_inv_f(t):
 
 
 def lab2xyz(mon: Monitor, LAB):
+    """
+    Convert a color from CIELAB color space to XYZ color space.
+
+    Args:
+        mon (Monitor): The monitor object containing the white point values.
+        LAB (tuple): A tuple containing the L, a, and b values of the color.
+
+    Returns:
+        numpy.ndarray: An array containing the X, Y, and Z values of the color in the XYZ color space.
+    """
     l = LAB[0]
     a = LAB[1]
     b = LAB[2]
@@ -62,11 +72,31 @@ def lab2xyz(mon: Monitor, LAB):
 
 
 def rgb2lab(mon: Monitor, rgb):
+    """
+    Convert an RGB color to the CIELAB color space.
+
+    Args:
+        mon (Monitor): The monitor object.
+        rgb (tuple): A tuple containing the red, green, and blue values of the color.
+
+    Returns:
+        tuple: A tuple containing the L*, a*, and b* values of the color in the CIELAB color space.
+    """
     xyz = rgb2xyz(mon, rgb)
     return xyz2lab(mon, xyz)
 
 
 def lab2rgb(mon: Monitor, lab):
+    """
+    Convert a color from CIELAB color space to RGB color space.
+
+    Args:
+        mon (Monitor): The monitor object.
+        lab (tuple): The CIELAB color values.
+
+    Returns:
+        tuple: The RGB color values.
+    """
     xyz = lab2xyz(mon, lab)
     return xyz2rgb(mon, xyz)
 
@@ -77,11 +107,31 @@ def matlab_rgb2lab(mon: Monitor, rgb):
 
 
 def lstar(mon: Monitor, rgb):
+    """
+    Convert an RGB color to the L* component of the CIELAB color space.
+
+    Args:
+        mon (Monitor): The monitor on which the color is displayed.
+        rgb (tuple): A tuple containing the red, green, and blue values of the color.
+
+    Returns:
+        float: The L* component of the color in the CIELAB color space.
+    """
     lab = rgb2lab(mon, rgb)
     return lab[0]
 
 
 def chroma(mon: Monitor, rgb):
+    """
+    Calculates the chroma value of an RGB color using the CIELAB color space.
+
+    Args:
+        mon (Monitor): The monitor object used to convert the RGB color to CIELAB.
+        rgb (tuple): A tuple containing the red, green, and blue values of the color.
+
+    Returns:
+        float: The chroma value of the color.
+    """
     lab = rgb2lab(mon, rgb)
     a = lab[1]
     b = lab[2]
@@ -89,6 +139,15 @@ def chroma(mon: Monitor, rgb):
 
 
 def hue(lab):
+    """
+    Calculates the hue value of a color in the CIELAB color space.
+
+    Args:
+        lab (tuple): A tuple containing the L*, a*, and b* values of the color.
+
+    Returns:
+        float: The hue value of the color in radians.
+    """
     a = lab[1]
     b = lab[2]
 

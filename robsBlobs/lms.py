@@ -6,6 +6,16 @@ import numpy as np
 from .monitor import Monitor
 
 def rgb2lms(mon: Monitor, rgb):
+    """
+    Convert RGB values to LMS values using the given monitor calibration.
+
+    Args:
+        mon (Monitor): The monitor calibration to use for the conversion.
+        rgb (array-like): The RGB values to convert.
+
+    Returns:
+        array-like: The LMS values corresponding to the input RGB values.
+    """
     return mon.RGB2LMS @ rgb
 
 
@@ -13,6 +23,19 @@ def rgb2lms(mon: Monitor, rgb):
 # http://cvrl.ucl.ac.uk/database/text/cienewxyz/cie2012xyz2.htm
 # https://en.wikipedia.org/wiki/LMS_color_space#cite_note-13
 def xyz2lms(xyz):
+    """
+    Convert from CIE XYZ color space to LMS color space using the CIE 2006 LMS to XYZ matrix.
+
+    Parameters:
+    -----------
+    xyz : numpy.ndarray
+        A 3-element array representing the XYZ color values.
+
+    Returns:
+    --------
+    numpy.ndarray
+        A 3-element array representing the LMS color values.
+    """
     cie2006_lms2xyz = np.array([[1.94735469, -1.41445123, 0.36476327],
                                 [0.68990272,  0.34832189, 0],
                                 [0,           0,          1.93485343]])
@@ -22,6 +45,19 @@ def xyz2lms(xyz):
 
 
 def lms2dkl(lms):
+    """
+    Convert LMS color space to DKL color space.
+
+    Parameters:
+    -----------
+    lms : numpy.ndarray
+        Array of LMS color values.
+
+    Returns:
+    --------
+    numpy.ndarray
+        Array of DKL color values.
+    """
     l = lms[:, 0].squeeze()
     m = lms[:, 1].squeeze()
     s = lms[:, 2].squeeze()

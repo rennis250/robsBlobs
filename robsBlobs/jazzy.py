@@ -61,15 +61,43 @@ def to_jaz(iab):
 
 
 def xyz_to_jaz(XYZ):
+    """
+    Convert a color from the XYZ color space to the Jazzy color space.
+
+    Args:
+        XYZ (tuple): A tuple containing the X, Y, and Z values of the color in the XYZ color space.
+
+    Returns:
+        tuple: A tuple containing the Jazzy color values.
+    """
     return to_jaz(iab(lms_prime(xyz_to_lms(xyz_corr(XYZ)))))
 
 
 def jazzy(mon: Monitor, rgb):
+    """
+    Converts an RGB color to Jazzy color space.
+
+    Args:
+        mon (Monitor): The monitor object.
+        rgb (tuple): The RGB color to convert.
+
+    Returns:
+        tuple: The Jazzy color space representation of the RGB color.
+    """
     xyz = rgb2xyz(mon, rgb)
     return xyz_to_jaz(xyz)
 
 
 def jaz_chroma(jaz):
+    """
+    Calculates the chroma value of a given jaz array.
+
+    Parameters:
+    jaz (list): A list of length 3 containing the jaz values.
+
+    Returns:
+    float: The chroma value calculated as the square root of the sum of the squares of the second and third elements of the jaz array.
+    """
     a = jaz[1]
     b = jaz[2]
 
@@ -77,6 +105,15 @@ def jaz_chroma(jaz):
 
 
 def jaz_hue(jaz):
+    """
+    Calculates the hue angle of a given color in the jazzy color space.
+
+    Args:
+        jaz (list): A list of three values representing the jazzy color space coordinates.
+
+    Returns:
+        float: The hue angle in radians.
+    """
     a = jaz[1]
     b = jaz[2]
 
@@ -88,10 +125,29 @@ def jaz_hue(jaz):
 
 
 def jaz_lightness(jaz):
+    """
+    Returns the lightness value of a given Jazzy color.
+
+    Args:
+        jaz (tuple): A tuple representing a Jazzy color in the format (lightness, hue, saturation).
+
+    Returns:
+        float: The lightness value of the Jazzy color.
+    """
     return jaz[0]
 
 
 def jaz_deltaE(jaz1, jaz2):
+    """
+    Calculates the color difference between two colors in the JAZ color space.
+
+    Args:
+        jaz1 (tuple): A tuple containing the L*, a*, and b* values of the first color.
+        jaz2 (tuple): A tuple containing the L*, a*, and b* values of the second color.
+
+    Returns:
+        float: The color difference between the two colors.
+    """
     J1 = jaz_lightness(jaz1)
     chroma1 = jaz_chroma(jaz1)
     hue1 = jaz_hue(jaz1)

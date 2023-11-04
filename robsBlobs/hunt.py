@@ -8,6 +8,15 @@ to_lms = np.array([[0.38971, 0.68898, -0.07868],
                    [0.0, 0.0, 1.0]])
 
 def xyz_to_cone(xyz):
+    """
+    Convert a set of XYZ coordinates to cone coordinates using the transformation matrix to_lms.
+
+    Args:
+        xyz (numpy.ndarray): A 3-element array representing the XYZ coordinates.
+
+    Returns:
+        numpy.ndarray: A 3-element array representing the cone coordinates.
+    """
     return to_lms @ xyz
 
 
@@ -18,6 +27,23 @@ def f_n(I):
 
 
 def adapt_cones(lms, lms_w, lms_p, La, Fl, Y_b, Y_white, discount, helson_judd):
+    """
+    Adapt cone responses to background illumination and discounting.
+
+    Args:
+    - lms (list): cone responses to the stimulus
+    - lms_w (list): cone responses to the white point
+    - lms_p (list): cone responses to the adapting stimulus
+    - La (float): adapting luminance
+    - Fl (float): luminance adaptation factor
+    - Y_b (float): luminance of the background
+    - Y_white (float): luminance of the white point
+    - discount (bool): whether to discount the adapting stimulus
+    - helson_judd (bool): whether to use the Helson-Judd effect
+
+    Returns:
+    - np.array: adapted cone responses
+    """
     p = lms[0]
     g = lms[1]
     b = lms[2]
@@ -70,6 +96,15 @@ def adapt_cones(lms, lms_w, lms_p, La, Fl, Y_b, Y_white, discount, helson_judd):
 
 
 def achrom_cone(pgb):
+    """
+    Calculates the achromatic cone response for a given pixel.
+
+    Args:
+        pgb (tuple): A tuple containing the pixel values for the red, green, and blue channels.
+
+    Returns:
+        float: The achromatic cone response for the given pixel.
+    """
     p = pgb[0]
     g = pgb[1]
     b = pgb[2]
@@ -295,6 +330,26 @@ def lightness(Y_b, Y_w, Q, Q_w):
 # transparencies, light box = 0.7, 25
 # transparencies, dark surround = 0.7, 10
 def hunt_brightness(XYZ_stim, XYZ_illum, La, XYZ_adapt, XYZ_bkgd, Nc, Nb, discount, helson_judd):
+    """
+    Calculates the brightness of a stimulus based on the Hunt model.
+
+    Args:
+    - XYZ_stim (tuple): tuple containing the tristimulus values of the stimulus in XYZ color space.
+    - XYZ_illum (tuple): tuple containing the tristimulus values of the illuminant in XYZ color space.
+    - La (float): adaptation luminance level in cd/m^2.
+    - XYZ_adapt (tuple): tuple containing the tristimulus values of the adapting field in XYZ color space.
+    - XYZ_bkgd (tuple): tuple containing the tristimulus values of the background in XYZ color space.
+    - Nc (float): surround luminance level in cd/m^2.
+    - Nb (float): background luminance level in cd/m^2.
+    - discount (float): discounting factor.
+    - helson_judd (bool): whether to use Helson-Judd effect or not.
+
+    Returns:
+    - dict: a dictionary containing the following keys:
+        - 'Q': the brightness of the stimulus.
+        - 'WB': the brightness of the stimulus with respect to the background.
+        - 'J': the lightness of the stimulus.
+    """
     xy_illum = XYZ2xy(XYZ_illum)
 
     xyz = XYZ_stim

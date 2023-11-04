@@ -1,6 +1,15 @@
 import numpy as np
 
 def sumRGB(rgb):
+    """
+    Sums the red, green, and blue values of an RGB color.
+
+    Parameters:
+    rgb (tuple): A tuple containing the red, green, and blue values of an RGB color.
+
+    Returns:
+    int: The sum of the red, green, and blue values.
+    """
     return np.sum(rgb)
 
 

@@ -139,6 +139,15 @@ from .cmfs import V_lambda
 
 # assume for now that all spectra were recorded with the konica cs2000-a
 def guth_lum_spect(spect):
+    """
+    Calculates the Guth luminosity of a given spectrum.
+
+    Parameters:
+    spect (numpy.ndarray): The input spectrum.
+
+    Returns:
+    float: The Guth luminosity of the input spectrum.
+    """
     spect_lum = V_lambda * spect
 
     As = np.power(np.sum(spect * A_adj), 2.0)
@@ -149,6 +158,16 @@ def guth_lum_spect(spect):
 
 
 def guth_lum_rgb(mon: Monitor, rgb):
+    """
+    Calculates the Guth luminance for a given RGB color value.
+
+    Args:
+        mon (Monitor): The monitor object containing the maximum spectral values for each color channel.
+        rgb (tuple): A tuple containing the red, green, and blue values for the color.
+
+    Returns:
+        float: The Guth luminance value for the given RGB color.
+    """
     r = rgb[0]
     g = rgb[1]
     b = rgb[2]

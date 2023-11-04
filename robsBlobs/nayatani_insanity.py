@@ -52,6 +52,30 @@ def Es(t):
 
 
 def robNT(xy_stim, Y_stim, Yo_bg, xy_illum, Eo, Eor):
+    """
+    Computes the Nayatani et al. (1995) color appearance model.
+
+    Args:
+        xy_stim (tuple): Tuple containing the chromaticity coordinates of the stimulus in CIE 1931 xyY color space.
+        Y_stim (float): Luminance of the stimulus in cd/m^2.
+        Yo_bg (float): Luminance of the background in cd/m^2.
+        xy_illum (tuple): Tuple containing the chromaticity coordinates of the illuminant in CIE 1931 xyY color space.
+        Eo (float): Illuminance of the stimulus in lux.
+        Eor (float): Illuminance of the reference white in lux.
+
+    Returns:
+        dict: A dictionary containing the following keys:
+            - 'Brightness': Brightness of the stimulus.
+            - 'Lightness': Lightness of the stimulus.
+            - 'Normalized Lightness': Normalized lightness of the stimulus.
+            - 'Hue Angle': Hue angle of the stimulus in degrees.
+            - 'Saturation': Saturation of the stimulus.
+            - 'Chroma': Chroma of the stimulus.
+            - 'Colorfulness': Colorfulness of the stimulus.
+            - 'Achromatic Response': Achromatic response of the stimulus.
+            - 'RG Response': Red-green response of the stimulus.
+            - 'YB Response': Yellow-blue response of the stimulus.
+    """
     xo = xy_illum[0]
     yo = xy_illum[1]
     Yo = Yo_bg

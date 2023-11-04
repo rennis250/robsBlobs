@@ -3,6 +3,15 @@ import numpy as np
 from .cmfs import ciexyz_1931
 
 def XYZ2xyY(XYZ):
+    """
+    Convert CIE XYZ color space to CIE xyY color space.
+
+    Parameters:
+    XYZ (numpy.ndarray): An array of CIE XYZ values.
+
+    Returns:
+    numpy.ndarray: An array of CIE xyY values.
+    """
     X = XYZ[0]
     Y = XYZ[1]
     Z = XYZ[2]
@@ -16,6 +25,15 @@ def XYZ2xyY(XYZ):
 
 
 def XYZ2xy(XYZ):
+    """
+    Converts CIE 1931 XYZ tristimulus values to chromaticity coordinates (x, y).
+
+    Parameters:
+    XYZ (numpy.ndarray): Array of CIE 1931 XYZ tristimulus values.
+
+    Returns:
+    numpy.ndarray: Array of chromaticity coordinates (x, y).
+    """
     xyY = XYZ2xyY(XYZ)
     x = xyY[0]
     y = xyY[1]
@@ -24,6 +42,15 @@ def XYZ2xy(XYZ):
 
 
 def xyY2XYZ(xyY):
+    """
+    Convert xyY color space to XYZ color space.
+
+    Args:
+        xyY (numpy.ndarray): Array of xyY values.
+
+    Returns:
+        numpy.ndarray: Array of XYZ values.
+    """
     x = xyY[0]
     y = xyY[1]
     Y = xyY[2]
@@ -38,6 +65,12 @@ def xyY2XYZ(xyY):
 plank_lasso = np.zeros((len(ciexyz_1931)+4, 2))
 plank_colors = np.zeros((len(plank_lasso), 3))
 def generatePlankLasso():
+    """
+    Generates a line of colors representing the Planckian locus in the CIE 1931 color space.
+
+    Returns:
+    None
+    """
     for c in range(len(ciexyz_1931)):
         spect = np.zeros((len(ciexyz_1931), ))
         spect[c] = 1.0

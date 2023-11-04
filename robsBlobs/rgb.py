@@ -13,16 +13,43 @@ sRGB2XYZ = np.array([[0.4124, 0.3576, 0.1805],
 XYZ2sRGB = np.linalg.inv(sRGB2XYZ)
 
 def xyz2srgb_linear(XYZ):
+    """
+    Converts linear XYZ values to linear sRGB values using the XYZ2sRGB matrix.
+
+    Args:
+        XYZ (numpy.ndarray): A 3-element array containing the linear XYZ values.
+
+    Returns:
+        numpy.ndarray: A 3-element array containing the linear sRGB values.
+    """
     print("xyz2srgb_linear: linear srgb values!")
     return XYZ2sRGB @ XYZ
 
 
 def linear_srgb2XYZ(srgb):
+    """
+    Convert linear sRGB values to XYZ color space using the sRGB2XYZ matrix.
+
+    Args:
+        srgb (numpy.ndarray): Linear sRGB values as a 3-element array.
+
+    Returns:
+        numpy.ndarray: XYZ color space values as a 3-element array.
+    """
     print("linear_srgb2XYZ: needs linear srgb values!")
     return sRGB2XYZ @ srgb
 
 
 def srgb_GammaCorrect(srgb):
+    """
+    Applies gamma correction to an sRGB color.
+
+    Args:
+        srgb (numpy.ndarray): An array of sRGB color values.
+
+    Returns:
+        numpy.ndarray: An array of gamma-corrected sRGB color values.
+    """
     srgb_gc = np.zeros((3))
     cc = 0
     for c in srgb:
@@ -37,6 +64,15 @@ def srgb_GammaCorrect(srgb):
 
 
 def srgb_linearize(srgb_gc):
+    """
+    Linearize sRGB gamma-compressed values.
+
+    Args:
+        srgb_gc (numpy.ndarray): Array of sRGB gamma-compressed values.
+
+    Returns:
+        numpy.ndarray: Array of linearized sRGB values.
+    """
     srgb = np.zeros((3))
     cc = 0
     for c in srgb_gc:
@@ -58,8 +94,26 @@ XYZ2CIERGB = (1/3400850) * XYZ2CIERGB
 CIERGB2XYZ = np.linalg.inv(XYZ2CIERGB)
 
 def xyz2ciergb(XYZ):
+    """
+    Convert XYZ color space to CIE RGB color space.
+
+    Parameters:
+    XYZ (numpy.ndarray): An array of shape (3,) representing the XYZ color space.
+
+    Returns:
+    numpy.ndarray: An array of shape (3,) representing the CIE RGB color space.
+    """
     return XYZ2CIERGB @ XYZ
 
 
 def ciergb2xyz(rgb):
+    """
+    Convert a color from CIE RGB color space to CIE XYZ color space.
+
+    Args:
+        rgb (tuple): A tuple of three values representing the red, green, and blue components of the color.
+
+    Returns:
+        tuple: A tuple of three values representing the X, Y, and Z components of the color in the CIE XYZ color space.
+    """
     return CIERGB2XYZ @ rgb

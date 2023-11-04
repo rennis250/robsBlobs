@@ -5,10 +5,30 @@ from scipy.optimize import curve_fit
 inds = [0, 32, 64, 83, 128, 160, 192, 220, 255]
 
 def gamma(x, g, a):
-	return a*np.power(x, g)
+    """
+    Calculate the gamma function for a given input x, power g, and coefficient a.
+
+    Args:
+        x (float): Input value.
+        g (float): Power value.
+        a (float): Coefficient value.
+
+    Returns:
+        float: Result of the gamma function.
+    """
+    return a*np.power(x, g)
 
 
 def fit_gamma(fn):
+    """
+    Fits gamma curves to the red, green, and blue channels of an image.
+
+    Args:
+        fn (str): The filename of the image to fit gamma curves to.
+
+    Returns:
+        None
+    """
     lum_mat = sio.loadmat(fn)
     
     rys = np.array(lum_mat["rys"])

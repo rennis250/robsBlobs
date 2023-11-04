@@ -42,6 +42,16 @@ def local_rgb2xyz(mon: Monitor, rgb):
 # https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=12595&context=theses
 # page 66 of the PDF file
 def brilliance(mon: Monitor, rgb):
+    """
+    Calculates the brilliance of a given RGB color on a given monitor.
+
+    Args:
+        mon (Monitor): The monitor on which the color is displayed.
+        rgb (tuple): The RGB color to calculate the brilliance for.
+
+    Returns:
+        float: The calculated brilliance value.
+    """
     xyz = local_rgb2xyz(mon, rgb)
     xyY = XYZ2xyY(xyz)
     g0_boundary_lum = brill_interp(xyY[0], xyY[1])
@@ -50,6 +60,16 @@ def brilliance(mon: Monitor, rgb):
 
 
 def brilliance_macadam(mon: Monitor, rgb):
+    """
+    Calculates the brilliance of a color using the MacAdam method.
+
+    Args:
+        mon (Monitor): The monitor object used for calibration.
+        rgb (tuple): The RGB values of the color.
+
+    Returns:
+        float: The brilliance of the color.
+    """
     xyz = local_rgb2xyz(mon, rgb)
     xyY = XYZ2xyY(xyz)
 

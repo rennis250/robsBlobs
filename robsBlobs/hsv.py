@@ -1,6 +1,15 @@
 import numpy as np
 
 def rgb2hsv(rgb):
+    """
+    Convert an RGB color value to HSV.
+
+    Args:
+        rgb (tuple): A tuple containing the red, green, and blue values (in that order) of the color to be converted.
+
+    Returns:
+        numpy.ndarray: A 1D numpy array containing the hue, saturation, and value (in that order) of the converted color.
+    """
     R = rgb[0]
     G = rgb[1]
     B = rgb[2]

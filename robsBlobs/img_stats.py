@@ -5,6 +5,15 @@ import pycircstat as cstat
 import astropy.stats.circstats as circstats
 
 def max_sat(labs):
+    """
+    Calculates the maximum saturation of a given set of LAB colors.
+
+    Parameters:
+    labs (numpy.ndarray): A numpy array of shape (n, 3) containing n LAB colors.
+
+    Returns:
+    numpy.ndarray: A numpy array of shape (2,) containing the mean a* and b* values of the most saturated colors.
+    """
     ls = labs[:, 0]
     As = labs[:, 1]
     bs = labs[:, 2]
@@ -14,8 +23,6 @@ def max_sat(labs):
 
     idxs = np.argsort(sats)
     five_perc_idxs = idxs[int(len(idxs)*0.95):]
-
-    # msat = np.array([np.mean(ls[five_perc_idxs]), np.mean(As[five_perc_idxs]), np.mean(bs[five_perc_idxs])])
 
     hs = np.array([bs[five_perc_idxs], As[five_perc_idxs]])
     hs[hs < 0] += 2*np.pi
@@ -51,9 +58,6 @@ def max_sat_hue(labs):
     return msat
 
 
-import numpy as np
-import colorstat as cstat
-
 def most_lum(labs):
     """
     Calculates the most luminous color in the given LAB color space.
@@ -78,8 +82,6 @@ def most_lum(labs):
     return mlum
 
 
-import numpy as np
-
 def mean_col(labs):
     """
     Calculates the mean color of an image in LAB color space.
@@ -99,7 +101,15 @@ def mean_col(labs):
 
 
 def mean_hue(labs):
-    # ls = labs[:, 0]
+    """
+    Calculates the mean hue of an array of LAB color values.
+
+    Parameters:
+    labs (numpy.ndarray): An array of LAB color values.
+
+    Returns:
+    float: The mean hue value in radians.
+    """
     As = labs[:, 1]
     bs = labs[:, 2]
 
@@ -162,6 +172,15 @@ def max_cov_pixels(labs):
 
 
 def most_freq(labs):
+    """
+    Finds the most frequently occurring color in a given array of colors.
+
+    Parameters:
+    labs (numpy.ndarray): An array of colors in the format of (R, G, B).
+
+    Returns:
+    numpy.ndarray: An array representing the most frequently occurring color in the input array.
+    """
     xs = labs[:, 0]
     ys = labs[:, 1]
     zs = labs[:, 2]
@@ -281,12 +300,30 @@ def classify_color(lab, color):
 
 
 def iri_extract_edge_center(labs, color):
+    """
+    Extracts the edge and center colors from an image in LAB color space.
+
+    Args:
+        labs (numpy.ndarray): A numpy array of shape (n, 3) containing the LAB color values of an image.
+        color (str): The color to extract, either "red", "green", or "blue".
+
+    Returns:
+        dict: A dictionary containing the center and edge colors of the specified color, along with their indices.
+            The dictionary has the following structure:
+            {
+                'cent': {
+                    'lab': numpy.ndarray,
+                    'idx': list,
+                },
+                'edge': {
+                    'lab': numpy.ndarray,
+                    'idx': list,
+                }
+            }
+    """
     ls = labs[:, 0]
     As = labs[:, 1]
     bs = labs[:, 2]
-
-    # hues = np.arctan2(bs, As)
-    # hues[hues < 0] += 2*np.pi
 
     edge_center = {
         'cent': {
@@ -298,9 +335,6 @@ def iri_extract_edge_center(labs, color):
             'idx': [],
         }
     }
-
-    # for c in range(len(hues)):
-        # h = hues[c]
 
     for c in range(len(labs)):
         cat, cent_edge = classify_color(labs[c, :].squeeze(), color)

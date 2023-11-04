@@ -28,6 +28,15 @@ stepSize[:len(diffs)] = diffs
 
 # assume always using konica wln range for now
 def spect2xyz(spect):
+    """
+    Convert spectral data to CIE XYZ color space.
+
+    Parameters:
+    spect (numpy.ndarray): Spectral data to be converted.
+
+    Returns:
+    numpy.ndarray: The converted CIE XYZ color space data.
+    """
     corrCMF = np.zeros((len(x_new_cmf), 3))
     corrCMF[:, 0] = 683 * x_new_cmf * stepSize
     corrCMF[:, 1] = 683 * y_new_cmf * stepSize
