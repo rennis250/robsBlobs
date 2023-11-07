@@ -31,8 +31,4 @@ from . import strobe_export
 from . import monitor_fitting
 from . import alices_damn_monitor
 
-# from . import nayatani_test
-# from . import hunt_test
-# from . import atd95_test
-
 cie_standard.generatePlankLasso()

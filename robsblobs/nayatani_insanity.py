@@ -85,7 +85,7 @@ def robNT(xy_stim, Y_stim, Yo_bg, xy_illum, Eo, Eor):
 
     xi = (0.48105*xo + 0.78841*yo - 0.08081)/yo
     eta = (-0.272*xo + 1.11962*yo + 0.0457)/yo
-    zeta = 0.91822 * (1.0 - xo - yo)/yo
+    zeta = (0.91822 * (1.0 - xo - yo))/yo
 
     cone_adapt_resp = Lo_adapt * np.array([xi, eta, zeta])
     R_o = cone_adapt_resp[0]

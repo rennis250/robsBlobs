@@ -13,6 +13,9 @@ colour-science = "^0.4.2"
 pycircstat = "^0.0.2"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
