@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-numpy = "^1.25.1"
+numpy = "^1.23.5"
 scipy = "^1.11.1"
 colour-science = "^0.4.2"
 pycircstat = "^0.0.2"

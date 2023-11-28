@@ -6,6 +6,7 @@ from . import funny_dude_discovers_maxRGB_in_adobe
 from . import G0_brilliance
 from . import ware_cowan
 from . import lms
+from . import dkl
 from . import maxRGB_revolution
 from . import sumrgb
 from . import nayatani_insanity

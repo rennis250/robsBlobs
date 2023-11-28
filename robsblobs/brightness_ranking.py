@@ -337,19 +337,22 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
         Yref_bkgd = 0.001
         Nc = 1.0
         Nb = 25
-        hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
         brightnesses['Hunt_Q Tele'] = hunt_res['Q']
         brightnesses['Hunt_WB Tele'] = hunt_res['WB']
 
         Nc = 1.0
         Nb = 75
-        hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
         brightnesses['Hunt_Q Norm'] = hunt_res['Q']
         brightnesses['Hunt_WB Norm'] = hunt_res['WB']
 
         Nc = 1.0
         Nb = 300
-        hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
+        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
         brightnesses['Hunt_Q Small'] = hunt_res['Q']
         brightnesses['Hunt_WB Small'] = hunt_res['WB']
 

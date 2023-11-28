@@ -1,5 +1,5 @@
 import numpy as np
-import colour
+# import colour
 
 from robsblobs.nayatani_insanity import robNT
 from robsblobs.cie_standard import XYZ2xy
@@ -69,11 +69,11 @@ def test_nayatani():
         res_C = res['Chroma']
         res_M = res['Colorfulness']
 
-        XYZ = np.array([X, Y, Z])
-        XYZ_n = np.array([Xn, Yn, Zn])
-        Y_o = 20
+        # XYZ = np.array([X, Y, Z])
+        # XYZ_n = np.array([Xn, Yn, Zn])
+        # Y_o = 20
 
-        res_col = colour.appearance.nayatani95.XYZ_to_Nayatani95(XYZ, XYZ_n, Y_o, Eo, Eor)
+        # res_col = colour.appearance.nayatani95.XYZ_to_Nayatani95(XYZ, XYZ_n, Y_o, Eo, Eor)
         # res_col_Br = res_col.B_r
         # res_col_Q = res_col.Q
         # res_col_Lp = res_col.L_star_P

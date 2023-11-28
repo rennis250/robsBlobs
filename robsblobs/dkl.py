@@ -13,7 +13,7 @@ def dkl2rgb(mon: Monitor, ldrgyv):
     Returns:
         numpy.ndarray: A vector of RGB values.
     """
-    return mon.DKL2RGB @ (ldrgyv/2.0 + 0.5)
+    return (mon.DKL2RGB @ ldrgyv)/2.0 + 0.5
 
 
 def rgb2dkl(mon: Monitor, rgb):
