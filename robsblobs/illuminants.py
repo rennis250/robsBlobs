@@ -217,7 +217,7 @@ d65_spect = np.array([0.034100,
 58.876500,
 60.312500])
 
-konica_wlns = np.linspace(380, 781)
+konica_wlns = np.arange(380, 781)
 d65_interp = CubicSpline(d65_wlns, d65_spect)
 d65_new = d65_interp(konica_wlns)
 

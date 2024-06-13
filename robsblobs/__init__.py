@@ -22,6 +22,7 @@ from . import hunt
 from . import spectra
 from . import illuminants
 from . import hsv
+from . import hsl
 from . import jingHSP
 from . import svf
 from . import hue_angles
@@ -31,5 +32,9 @@ from . import atd95
 from . import strobe_export
 from . import monitor_fitting
 from . import alices_damn_monitor
+from . import rgb
+from . import mb_space
+from . import diff_eqns
+from . import itu_rec_bt2124
 
 cie_standard.generatePlankLasso()

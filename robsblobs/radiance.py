@@ -17,7 +17,7 @@ def radiance(mon: Monitor, rgb):
     g = rgb[1]
     b = rgb[2]
 
-    return (mon.R_max_spectrum*r + mon.G_max_spectrum*g + mon.B_max_spectrum*b).sum()/mon.maxRadiance
+    return (mon.R_max_spectrum*r + mon.G_max_spectrum*g + mon.B_max_spectrum*b).sum()
 
 
 def visibleRadiance(mon: Monitor, rgb):
@@ -35,4 +35,4 @@ def visibleRadiance(mon: Monitor, rgb):
     g = rgb[1]
     b = rgb[2]
 
-    return (mon.visible_R_max_spectrum*r + mon.visible_G_max_spectrum*g + mon.visible_B_max_spectrum*b).sum()/mon.maxVisibleRadiance
+    return (mon.visible_R_max_spectrum*r + mon.visible_G_max_spectrum*g + mon.visible_B_max_spectrum*b).sum()

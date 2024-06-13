@@ -57,4 +57,4 @@ def luminance(mon: Monitor, rgb):
         float: The calculated luminance value.
     """
     lums = rgb * [mon.monxyY[0, 2], mon.monxyY[1, 2], mon.monxyY[2, 2]]
-    return np.array(lums).sum()/mon.maxLuminance
+    return np.array(lums).sum()

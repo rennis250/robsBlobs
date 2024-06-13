@@ -3,7 +3,7 @@ from scipy.interpolate import CubicSpline
 
 from .cmfs import ciexyz_1931
 
-konica_wlns = np.linspace(380, 781)
+konica_wlns = np.arange(380, 781)
 
 wavelength_cmf = np.array(list(ciexyz_1931[0]))
 x_bar = np.array(list(ciexyz_1931[1]))

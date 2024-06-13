@@ -23,7 +23,7 @@ def lumchrm(lumr, lumg, lumb, r, g, b):
   sout = bigs/denom
   print('L/L+M =', lout, ' S/L+M =', sout)
 
-  return
+  return np.array([lout, sout])
 
 
 def solvex(a, b, c, d, e, f):

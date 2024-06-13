@@ -12,7 +12,7 @@ NT_unique_blue = 231.00 # degrees
 # Hue Quadrature is 400-step hue scale, starting at unique red.
 # Interpolate hue based on unique hue angles above to get
 # the Hue Quadrature
-quad_steps = np.linspace(0, 400)
+quad_steps = np.arange(0, 400)
 quad_red = 0
 quad_yellow = 100
 quad_green = 200

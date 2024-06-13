@@ -136,6 +136,9 @@ def accuracyShuchen(ranks1, ranks2):
     pairRanks1 = np.zeros((nr1, nr1))
     for c1 in range(nr1):
         for cc1 in range(nr1):
+            if c1 == cc1:
+                continue
+
             rl = ranks1[c1]
             rr = ranks1[cc1]
             if rl > rr:
@@ -145,18 +148,22 @@ def accuracyShuchen(ranks1, ranks2):
     
     nr2 = len(ranks2)
     pairRanks2 = np.zeros((nr2, nr2))
-    for c1 in range(nr2):
-        for cc1 in range(nr2):
-            rl = ranks2[c1]
-            rr = ranks2[cc1]
+    for c2 in range(nr2):
+        for cc2 in range(nr2):
+            if c2 == cc2:
+                continue
+            
+            rl = ranks2[c2]
+            rr = ranks2[cc2]
             if rl > rr:
-                pairRanks2[c1, cc1] = 1
+                pairRanks2[c2, cc2] = 1
             else:
-                pairRanks2[c1, cc1] = 0
+                pairRanks2[c2, cc2] = 0
 
     acc = (pairRanks1 == pairRanks2).flatten().sum()
 
     return acc/(nr1*nr1)
+
 
 from .maxRGB_revolution import maxRGB, maxRGB_Shuchen, maxRGB_G0
 from .sumrgb import sumRGB_Shuchen, sumRGB
@@ -175,6 +182,7 @@ from .nayatani_insanity import robNT
 from .hunt import hunt_brightness
 from .svf import svf
 from .jingHSP import jingHSP
+from .atd95 import guth_atd
 
 import colour
 
@@ -231,6 +239,7 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
         'Hunt_WB Small': np.zeros((ncs)),
         'JingB': np.zeros((ncs)),
         'ATD': np.zeros((ncs)),
+        'RobATD': np.zeros((ncs)),
         'Hellwig Avg Q': np.zeros((ncs)),
         'Hellwig Avg J': np.zeros((ncs)),
         'Hellwig Dim Q': np.zeros((ncs)),
@@ -251,8 +260,6 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
         xyY = XYZ2xyY(xyz)
 
         xy_desat = 0.4*xyY[0:2] + 0.6*d65_xy
-
-        lms = rgb2lms(mon, rgb)
 
         lab = rgb2lab(mon, rgb)
         brightnesses['Lstar'][c] = lab[0]
@@ -275,7 +282,9 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
 
         brightnesses['JingB'][c] = jingHSP(rgb)
 
-        brightnesses['maxLMS'][c] = maxLMS(lms)
+        if len(mon.RGB2LMS) > 0:
+            lms = rgb2lms(mon, rgb)
+            brightnesses['maxLMS'][c] = maxLMS(lms)
 
         brightnesses['brilliance'][c] = brilliance(mon, rgb)
 
@@ -286,12 +295,22 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
         brightnesses['brill_macadam'][c] = brilliance_macadam(mon, rgb)
 
         brightnesses['luminance'][c] = luminance(mon, rgb)
-        brightnesses['radiance'][c] = radiance(mon, rgb)
         brightnesses['chroma'][c] = chroma(mon, rgb)
 
-        brightnesses['visibleRadiance'][c] = visibleRadiance(mon, rgb)
+        if len(mon.R_max_spectrum) > 0:
+            brightnesses['radiance'][c] = radiance(mon, rgb)
+        else:
+            brightnesses['radiance'][c] = np.nan
 
-        brightnesses['Guth'][c] = guth_lum_rgb(mon, rgb)
+        if len(mon.visible_R_max_spectrum) > 0:
+            brightnesses['visibleRadiance'][c] = visibleRadiance(mon, rgb)
+        else:
+            brightnesses['visibleRadiance'][c] = np.nan
+
+        if len(mon.R_max_spectrum) > 0:
+            brightnesses['Guth'][c] = guth_lum_rgb(mon, rgb)
+        else:
+            brightnesses['Guth'][c] = np.nan
 
         jaz = jazzy(mon, rgb)
         brightnesses['JzAzBz'][c] = jaz_lightness(jaz)
@@ -334,33 +353,38 @@ def computeAllBrightnessModels(mon: Monitor, rgbs):
         xy_adapt = np.array([0.33, 0.33])
         Yref_adapt = 0.001
         xy_bkgd = np.array([0.33, 0.33])
+        XYZ_b = np.array([0, 0.001, 0])
         Yref_bkgd = 0.001
+        discount = False
         Nc = 1.0
         Nb = 25
         # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
-        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
-        brightnesses['Hunt_Q Tele'] = hunt_res['Q']
-        brightnesses['Hunt_WB Tele'] = hunt_res['WB']
+        hunt_res = hunt_brightness(xyz, mon.monWP, L_A, np.array([0, 0, 0]), XYZ_b, Nc, Nb, discount, False)
+        brightnesses['Hunt_Q Tele'][c] = hunt_res['Q']
+        brightnesses['Hunt_WB Tele'][c] = hunt_res['WB']
 
         Nc = 1.0
         Nb = 75
         # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
-        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
-        brightnesses['Hunt_Q Norm'] = hunt_res['Q']
-        brightnesses['Hunt_WB Norm'] = hunt_res['WB']
+        hunt_res = hunt_brightness(xyz, mon.monWP, L_A, np.array([0, 0, 0]), XYZ_b, Nc, Nb, discount, False)
+        brightnesses['Hunt_Q Norm'][c] = hunt_res['Q']
+        brightnesses['Hunt_WB Norm'][c] = hunt_res['WB']
 
         Nc = 1.0
         Nb = 300
         # hunt_res = hunt_brightness(xy_stim, Y_stim, xy_illum, Eo, xy_adapt, Yref_adapt, xy_bkgd, Yref_bkgd, Nc, Nb)
-        # hunt_res = hunt_brightness(xyz, mon.monWP, L_A, , XYZ_b, Nc, Nb, discount, False)
-        brightnesses['Hunt_Q Small'] = hunt_res['Q']
-        brightnesses['Hunt_WB Small'] = hunt_res['WB']
+        hunt_res = hunt_brightness(xyz, mon.monWP, L_A, np.array([0, 0, 0]), XYZ_b, Nc, Nb, discount, False)
+        brightnesses['Hunt_Q Small'][c] = hunt_res['Q']
+        brightnesses['Hunt_WB Small'][c] = hunt_res['WB']
 
         # we were viewing in related colors mode
         atd_k_1 = 1.0
         atd_k_2 = 5.0
         atd_res = colour.appearance.atd95.XYZ_to_ATD95(xyz, mon.monWP, Yref_adapt, atd_k_1, atd_k_2)
         brightnesses['ATD'][c] = atd_res.Q
+
+        rob_atd_res = guth_atd(xyz, mon.monWP, Yref_adapt, atd_k_1, atd_k_2)
+        brightnesses['RobATD'][c] = rob_atd_res["Br"]
 
         surr = colour.appearance.hellwig2022.VIEWING_CONDITIONS_HELLWIG2022["Dim"]
         hf_res = colour.appearance.XYZ_to_Hellwig2022(xyz, mon.monWP, Yref_adapt, Yref_bkgd, surr)

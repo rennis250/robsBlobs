@@ -5,6 +5,8 @@ import scipy.io as sio
 
 from .monitor import Monitor
 from .cie_monitor_helpers import rgb2xyz
+from .dkl import dkl2rgb
+from .infamous_lab import xyz2lab
 
 flickerTypes = dict([
     (0, "RedGreen"),
@@ -34,7 +36,7 @@ def convert_color_weight_to_lum(mon, df):
     rgb = np.zeros(3)
     for rc in range(3):
         # because this is what we sent to the monitor
-        rgb_gc[rc] = np.power(w * c[rc], 1.0/2.2)
+        rgb_gc[rc] = np.power(w.iloc[0] * c[rc], 1.0/2.2)
         rgb[rc] = np.power(rgb_gc[rc], mon.monGamma[rc])
             
     xyz = rgb2xyz(mon, rgb)
@@ -82,19 +84,19 @@ def parse_minmotion_data(mon: Monitor, data, resp, tc):
     return t
     
 
-def parse_unique_yellow_data():
-    pass
-    # t = pd.DataFrame({
-    #         "StimType": "UniqueYellow",
-    #         "SubjectName": str(db.iloc[tc]["SubjectName"]),
-    #         "BlockNumber": db.iloc[tc]["BlockNumber"],
-    #         "TrialInBlock": db.iloc[tc]["TrialInBlock"],
-    #         "TotalTrials": db.iloc[tc]["TotalTrials"],
-    #         "ReactionTime": float(db.iloc[tc]["ReactionTime"]),
-    #         "WeightR": [float(resp["weight_R"])],
-    #         "WeightG": [float(resp["weight_G"])]
-    #     })
-    #     df = pd.concat([df, t])
+def parse_unique_yellow_data(mon: Monitor, data, resp, tc):
+    t = pd.DataFrame({
+        "StimType": "UniqueYellow",
+        "SubjectName": str(data.iloc[tc]["SubjectName"]),
+        "BlockNumber": data.iloc[tc]["BlockNumber"],
+        "TrialInBlock": data.iloc[tc]["TrialInBlock"],
+        "TotalTrials": data.iloc[tc]["TotalTrials"],
+        "ReactionTime": float(data.iloc[tc]["ReactionTime"]),
+        "WeightR": [float(resp["weight_R"])],
+        "WeightG": [float(resp["weight_G"])]
+    })
+
+    return t
 
 
 def parse_brightness_sorting_data(mon: Monitor, data, resp, tc):
@@ -124,6 +126,53 @@ def parse_brightness_sorting_data(mon: Monitor, data, resp, tc):
     return t
 
 
+def parse_white_setting_data(mon: Monitor, data, resp, tc):
+    t = pd.DataFrame()
+
+    ld = resp["ld"]
+    rg = resp["rg"]
+    yv = resp["yv"]
+
+    rgb = dkl2rgb(mon, [ld, rg, yv])
+    xyz = rgb2xyz(mon, rgb)
+    lab = xyz2lab(mon, xyz)
+
+    t = pd.DataFrame({
+        "StimType": "WhiteSetting",
+        "SubjectName": str(data.iloc[tc]["SubjectName"]),
+        "BlockNumber": data.iloc[tc]["BlockNumber"],
+        "TrialInBlock": data.iloc[tc]["TrialInBlock"],
+        "TotalTrials": data.iloc[tc]["TotalTrials"],
+        "ReactionTime": float(data.iloc[tc]["ReactionTime"]),
+        "LD": ld,
+        "RG": rg,
+        "YV": yv,
+        "R": rgb[0],
+        "G": rgb[1],
+        "B": rgb[2],
+        "L": lab[0],
+        "a": lab[1],
+        "b": lab[2]
+    }, index = [1])
+
+    return t
+
+
+def parse_mult_choice_data(mon: Monitor, data, resp, tc):
+    t = pd.DataFrame({
+        "StimType": "MultipleChoice",
+        "SubjectName": str(data.iloc[tc]["SubjectName"]),
+        "BlockNumber": data.iloc[tc]["BlockNumber"],
+        "TrialInBlock": data.iloc[tc]["TrialInBlock"],
+        "TotalTrials": data.iloc[tc]["TotalTrials"],
+        "ReactionTime": float(data.iloc[tc]["ReactionTime"]),
+        "CorrResp": resp['corr_resp'],
+        "ObsResp": resp['obs_resp'] - 48
+    }, index = [1])
+
+    return t
+
+
 def parse_strobe_data(mon: Monitor, fn):
     d = pd.read_json(fn)
 
@@ -141,7 +190,8 @@ def parse_strobe_data(mon: Monitor, fn):
     sname = str(d["SubjectName"][0])
 
     df = pd.DataFrame()
-    for tc in d["TotalTrials"]:
+    # for tc in d["TotalTrials"]:
+    for tc in range(len(d)):
         resp = d.iloc[tc]["ObserverResponse"]
         if len(resp) == 0:
             continue
@@ -150,14 +200,18 @@ def parse_strobe_data(mon: Monitor, fn):
         if 'motion_type' in resp:
             ts = parse_minmotion_data(mon, d, resp, tc)
         elif 'weight_R' in resp:
-            continue
             ts = parse_unique_yellow_data(mon, d, resp, tc)
-        elif 'rect_index' in resp[0]:
-            ts = parse_brightness_sorting_data(mon, d, resp, tc)
         elif 'flicker_type' in resp:
             continue
             ts = parse_flicker_data(mon, d, resp, tc)
-
+        elif 'ld' in resp:
+            ts = parse_white_setting_data(mon, d, resp, tc)
+        elif 'corr_resp' in resp and 'obs_resp' in resp:
+            ts = parse_mult_choice_data(mon, d, resp, tc)
+        elif len(resp) > 1:
+            if 'rect_index' in resp[0]:
+                ts = parse_brightness_sorting_data(mon, d, resp, tc)
+        
         if isinstance(ts, list) and len(ts) > 0:
             for t in ts:
                 df = pd.concat([df, t])

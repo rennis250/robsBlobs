@@ -33,7 +33,7 @@ for i in range(ncents):
         spect[i, j, 1, :] = 1-s
 
 
-konica_wlns = np.linspace(380, 781)
+konica_wlns = np.arange(380, 781)
 xyz = np.zeros((ncents, nwidths, 2, 3))
 xyY = np.zeros((ncents, nwidths, 2, 3))
 for i in range(ncents):

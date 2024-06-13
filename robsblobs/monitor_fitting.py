@@ -55,7 +55,7 @@ def fit_gamma(fn):
 
 
 # def konica_spect_to_xyz(spect):
-#     wlns = np.arange(380, 780)
+#     wlns = np.arange(380, 781)
 #     cmfData = csvread('ciexyz31_1.csv')
 
 #     wavelength_cmf = cmfData[:, 0]

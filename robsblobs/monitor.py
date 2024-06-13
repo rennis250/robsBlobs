@@ -2,6 +2,8 @@ import numpy as np
 import scipy.io as sio
 from scipy.interpolate import CubicSpline
 
+import pickle
+
 from .cie_standard import xyY2XYZ
 from .cmfs import lms_wlns, l_absorp, m_absorp, s_absorp
 from .dkl_setup import cie2lms, lumchrm, solvex, solvey
@@ -10,6 +12,11 @@ from .dkl_setup import cie2lms, lumchrm, solvex, solvey
 class Monitor:
     def __init__(self, name):
         self.name = name
+        self.manufacturer = ""
+        self.model = ""
+
+        self.calib_software = ""
+        self.colorspace = ""
 
         self.monxyY_file = ""
         self.spectralData_file = ""
@@ -19,6 +26,9 @@ class Monitor:
         # self.monuvY = np.array([])
         self.monWP = np.array([])
         self.maxLuminance = np.array([])
+
+        # default assumption is black point is all zeros
+        self.monBP = np.array([0.0, 0.0, 0.0])
 
         # default assumption is 2.2 gamma for all primaries
         self.monGamma = np.array([2.2, 2.2, 2.2])
@@ -47,7 +57,108 @@ class Monitor:
         self.XYZ2RGB = np.array([])
         self.RGB2XYZ = np.array([])
 
+        self.monXYZ_normed = np.array([])
+        self.XYZ2RGB_normed = np.array([])
+        self.RGB2XYZ_normed = np.array([])
+
+        self.grayMB = np.array([])
+        self.greenMB = np.array([])
+        self.redMB = np.array([])
+        self.yellowMB = np.array([])
+        self.blueMB = np.array([])
+
         self.visibleRadianceWindow = np.zeros((len(self.wlns)))
+
+        self.visible_R_max_spectrum = np.array([])
+        self.visible_G_max_spectrum = np.array([])
+        self.visible_B_max_spectrum = np.array([])
+        self.visible_W_max_spectrum = np.array([])
+
+        self.maxVisibleRadiance = -1
+
+    def save(self, fname):
+        with open(fname, "wb") as f:
+            pickle.dump(self, f)
+
+    def load(fname):
+        with open(fname, "rb") as f:
+            mon = pickle.load(f)
+
+        return mon
+
+    def export_to_mat(self, fname):
+        sio.savemat(fname, {
+            "name": self.name,
+            "manufacturer": self.manufacturer,
+            "model": self.model,
+
+            "calib_software": self.calib_software,
+            "colorspace": self.colorspace,
+
+            "monxyY_file": self.monxyY_file,
+            "spectralData_file": self.spectralData_file,
+
+            "monxyY": self.monxyY,
+            "monXYZ": self.monXYZ,
+            "monWP": self.monWP,
+            "monBP": self.monBP,
+            "maxLuminance": self.maxLuminance,
+
+            "monGamma": self.monGamma,
+
+            "wlns": self.wlns,
+
+            "spectralData": self.spectralData,
+
+            "R_max_spectrum": self.R_max_spectrum,
+            "G_max_spectrum": self.G_max_spectrum,
+            "B_max_spectrum": self.B_max_spectrum,
+            "W_max_spectrum": self.W_max_spectrum,
+
+            "R_max_luminance": self.R_max_luminance,
+            "G_max_luminance": self.G_max_luminance,
+            "B_max_luminance": self.B_max_luminance,
+            "W_max_luminance": self.W_max_luminance,
+
+            "RGB2LMS": self.RGB2LMS,
+            "LMS2RGB": self.LMS2RGB,
+            "DKL2RGB": self.DKL2RGB,
+            "RGB2DKL": self.RGB2DKL,
+
+            "XYZ2RGB": self.XYZ2RGB,
+            "RGB2XYZ": self.RGB2XYZ,
+
+            "monXYZ_normed": self.monXYZ_normed,
+            "XYZ2RGB_normed": self.XYZ2RGB_normed,
+            "RGB2XYZ_normed": self.RGB2XYZ_normed,
+
+            "grayMB": self.grayMB,
+            "greenMB": self.greenMB,
+            "redMB": self.redMB,
+            "yellowMB": self.yellowMB,
+            "blueMB": self.blueMB,
+
+            "visibleRadianceWindow": self.visibleRadianceWindow,
+
+            "visible_R_max_spectrum": self.visible_R_max_spectrum,
+            "visible_G_max_spectrum": self.visible_G_max_spectrum,
+            "visible_B_max_spectrum": self.visible_B_max_spectrum,
+            "visible_W_max_spectrum": self.visible_W_max_spectrum,
+
+            "maxVisibleRadiance": self.maxVisibleRadiance,
+        })
+
+    def set_manufacturer(self, manufacturer):
+        self.manufacturer = manufacturer
+
+    def set_model(self, model):
+        self.model = model
+
+    def set_calib_software(self, calib_software):
+        self.calib_software = calib_software
+
+    def set_colorspace(self, colorspace):
+        self.colorspace = colorspace
 
     def load_monxyY(self, fname):
         self.monxyY_file = fname
@@ -73,7 +184,22 @@ class Monitor:
         self.RGB2XYZ = self.monXYZ
         self.XYZ2RGB = np.linalg.inv(self.RGB2XYZ)
 
+        # Normalizing luminance values in the primary matrix,
+        # but do we only want to normalize luminance?
+        lum_s = np.sum(self.monxyY[:, 2])
+        self.monXYZ_normed = np.zeros((3, 3))
+        for c in range(3):
+            xyY_normed = self.monxyY[c, :].copy()
+            xyY_normed[2] = xyY_normed[2] / lum_s
+            self.monXYZ_normed[:, c] = xyY2XYZ(xyY_normed)
+
+        self.RGB2XYZ_normed = self.monXYZ_normed
+        self.XYZ2RGB_normed = np.linalg.inv(self.RGB2XYZ_normed)
+
         self.dkl2rgbFromCalib()
+
+    def set_monBP(self, monBP):
+        self.monBP = monBP
 
     def set_monGamma(self, monGamma):
         self.monGamma = monGamma
@@ -217,23 +343,28 @@ class Monitor:
         M = np.array([R[1], G[1], B[1]])
         S = np.array([R[2], G[2], B[2]])
 
-        lumchrm(white[0], white[1], white[2], L, M, S)
+        self.grayMB = lumchrm(white[0], white[1], white[2], L, M, S)
 
         print('Red Green Axis')
         deltaGrg = solvex(white[0]*S[0], white[0]*(L[0]+M[0]), S[1], S[2], L[1]+M[1], L[2]+M[2])
         deltaBrg = solvey(white[0]*S[0], white[0]*(L[0]+M[0]), S[1], S[2], L[1]+M[1], L[2]+M[2])
         dGrg = -1*deltaGrg/white[1]
         dBrg = -1*deltaBrg/white[2]
-        lumchrm(0.0, white[1]+deltaGrg, white[2]+deltaBrg, L, M, S)
-        lumchrm(white[0]*2.0, white[1]-deltaGrg, white[2]-deltaBrg, L, M, S)
+        self.greenMB = lumchrm(0.0, white[1]+deltaGrg, white[2]+deltaBrg, L, M, S)
+        self.redMB = lumchrm(white[0]*2.0, white[1]-deltaGrg, white[2]-deltaBrg, L, M, S)
 
         print('Blue Yellow Axis')
         deltaRyv = solvex(white[2]*L[2], white[2]*M[2], L[0], L[1], M[0], M[1])
         deltaGyv = solvey(white[2]*L[2], white[2]*M[2], L[0], L[1], M[0], M[1])
         dRyv = -1*deltaRyv/white[0]
         dGyv = -1*deltaGyv/white[1]
-        lumchrm(white[0]+deltaRyv, white[1]+deltaGyv, 0.0, L, M, S)
-        lumchrm(white[0]-deltaRyv, white[1]-deltaGyv, white[2]*2.0, L, M, S)
+        self.yellowMB = lumchrm(white[0]+deltaRyv, white[1]+deltaGyv, 0.0, L, M, S)
+        self.blueMB = lumchrm(white[0]-deltaRyv, white[1]-deltaGyv, white[2]*2.0, L, M, S)
+
+        self.greenMB -= self.grayMB
+        self.redMB -= self.grayMB
+        self.yellowMB -= self.grayMB
+        self.blueMB -= self.grayMB
 
         self.DKL2RGB = np.array([
                         [1, 1,    dRyv],
