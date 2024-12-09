@@ -199,7 +199,7 @@ def most_freq(labs):
 
     step_size = 10
 
-    max_freq = np.NINF
+    max_freq = -np.inf
     xc_mfreq = 1
     yc_mfreq = 1
     zc_mfreq = 1
@@ -237,7 +237,7 @@ def most_freq(labs):
 
     step_size = 1
 
-    max_freq = np.NINF
+    max_freq = -np.inf
     xc_mfreq = 1
     yc_mfreq = 1
     zc_mfreq = 1

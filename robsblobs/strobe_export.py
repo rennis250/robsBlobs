@@ -5,7 +5,7 @@ import scipy.io as sio
 
 from .monitor import Monitor
 from .cie_monitor_helpers import rgb2xyz
-from .dkl import dkl2rgb
+from .dkl import dkl2rgb, rgb2dkl
 from .infamous_lab import xyz2lab
 
 flickerTypes = dict([
@@ -99,6 +99,109 @@ def parse_unique_yellow_data(mon: Monitor, data, resp, tc):
     return t
 
 
+def parse_uy_elim_data(mon: Monitor, data, resp, tc):
+    indexes = []
+    left_over = []
+    rs = []
+    gs = []
+    bs = []
+    wrs = []
+    wgs = []
+    for rc in range(len(resp)):
+        w = resp[rc]["color"]
+        rgb = [w, 1.0 - w, 0.0]
+        wr = w
+        wg = 1.0 - w
+
+        indexes.append(resp[rc]["rect_index"])
+        rs.append(float(rgb[0]))
+        gs.append(float(rgb[1]))
+        bs.append(float(rgb[2]))
+        left_over.append(resp[rc]["left_over"])
+        wrs.append(wr)
+        wgs.append(wg)
+        
+    t = pd.DataFrame(
+        {
+            "StimType": "UniqueYellowEliminator",
+            "SubjectName": str(data.iloc[tc]["SubjectName"]),
+            "BlockNumber": data.iloc[tc]["BlockNumber"],
+            "TrialInBlock": data.iloc[tc]["TrialInBlock"],
+            "TotalTrials": data.iloc[tc]["TotalTrials"],
+            "ReactionTime": float(data.iloc[tc]["ReactionTime"]),
+            "RectangleIndex": [indexes],
+            "LeftOver": [left_over],
+            "R": [rs],
+            "G": [gs],
+            "B": [bs],
+            "WeightR": [wrs],
+            "WeightG": [wgs],
+        }
+    )
+
+    return t
+
+
+def parse_ws_elim_data(mon: Monitor, data, resp, tc):
+    indexes = []
+    left_over = []
+    rs = []
+    gs = []
+    bs = []
+    ls = []
+    ass = []
+    lbs = []
+    for rc in range(len(resp)):
+        indexes.append(resp[rc]["rect_index"])
+        rs.append(float(resp[rc]["color"][0]))
+        gs.append(float(resp[rc]["color"][1]))
+        bs.append(float(resp[rc]["color"][2]))
+        left_over.append(resp[rc]["left_over"])
+
+        r = float(resp[rc]["color"][0])
+        g = float(resp[rc]["color"][1])
+        b = float(resp[rc]["color"][2])
+
+        r = r / 255 # if r > 1 else r
+        g = g / 255 # if g > 1 else g
+        b = b / 255 # if b > 1 else b
+
+        ldrgyv = rgb2dkl(mon, np.array([r, g, b]).T)
+
+        ld = ldrgyv[0]
+        rg = ldrgyv[1]
+        yv = ldrgyv[2]
+
+        rgb = dkl2rgb(mon, np.array([ld, rg, yv]).T)
+        xyz = rgb2xyz(mon, rgb)
+        lab = xyz2lab(mon, xyz)
+
+        ls.append(lab[0])
+        ass.append(lab[1])
+        lbs.append(lab[2])
+
+    t = pd.DataFrame(
+        {
+            "StimType": "WhiteSettingEliminatorDKL_small_extent",
+            "SubjectName": str(data.iloc[tc]["SubjectName"]),
+            "BlockNumber": data.iloc[tc]["BlockNumber"],
+            "TrialInBlock": data.iloc[tc]["TrialInBlock"],
+            "TotalTrials": data.iloc[tc]["TotalTrials"],
+            "ReactionTime": float(data.iloc[tc]["ReactionTime"]),
+            "RectangleIndex": [indexes],
+            "LeftOver": [left_over],
+            "R": [rs],
+            "G": [gs],
+            "B": [bs],
+            "L": [ls],
+            "a": [ass],
+            "b": [lbs]
+        }
+    )
+
+    return t
+
+
 def parse_brightness_sorting_data(mon: Monitor, data, resp, tc):
     indexes = []
     rs = []
@@ -173,7 +276,7 @@ def parse_mult_choice_data(mon: Monitor, data, resp, tc):
     return t
 
 
-def parse_strobe_data(mon: Monitor, fn):
+def parse_strobe_data(mon: Monitor, fn, exp_json):
     d = pd.read_json(fn)
 
     d = d.rename({
@@ -192,11 +295,20 @@ def parse_strobe_data(mon: Monitor, fn):
     df = pd.DataFrame()
     # for tc in d["TotalTrials"]:
     for tc in range(len(d)):
+        # bc = d.iloc[tc]["BlockNumber"]
+        # tib = d.iloc[tc]["TrialInBlock"]
         resp = d.iloc[tc]["ObserverResponse"]
         if len(resp) == 0:
             continue
 
+        # stim_type = exp_json["blocks"][bc]["trials"][tib]["stages"][0]["type"]
+
         ts = []
+        # if stim_type == "WhiteSettingEliminatorDKL_small_extent":
+            # ts = parse_ws_elim_data(mon, d, resp, tc)
+        # elif stim_type == "UniqueYellowEliminator":
+            # ts = parse_uy_elim_data(mon, d, resp, tc)
+        # elif stim_type == "MinimalMotionShader" or 'motion_type' in resp:
         if 'motion_type' in resp:
             ts = parse_minmotion_data(mon, d, resp, tc)
         elif 'weight_R' in resp:
@@ -209,8 +321,14 @@ def parse_strobe_data(mon: Monitor, fn):
         elif 'corr_resp' in resp and 'obs_resp' in resp:
             ts = parse_mult_choice_data(mon, d, resp, tc)
         elif len(resp) > 1:
-            if 'rect_index' in resp[0]:
-                ts = parse_brightness_sorting_data(mon, d, resp, tc)
+            if len(resp) > 1:
+                # print(resp)
+                if isinstance(resp[0]["color"], float):
+                    ts = parse_uy_elim_data(mon, d, resp, tc)
+                else:
+                    ts = parse_ws_elim_data(mon, d, resp, tc)
+            # if 'rect_index' in resp[0]:
+                # ts = parse_brightness_sorting_data(mon, d, resp, tc)
         
         if isinstance(ts, list) and len(ts) > 0:
             for t in ts:
